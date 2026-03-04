@@ -1,0 +1,39 @@
+# Active Learning Configuration for REANN
+# Copy and modify this file for your system.
+# Usage: python scripts/active_learning.py --config al_config.yaml
+
+# Working directory (all REANN files will be here)
+workdir: ./work
+
+# Atom types (must match across all scripts)
+atomtype: ['C', 'N', 'Cu']
+
+# --- Data ---
+dft_data_dir: ./dft_data          # Directory with OUTCAR/vasprun.xml for initial dataset
+train_ratio: 0.8                  # Train/val split ratio
+new_dft_dir: ./new_dft            # DFT results for evaluation (updated each cycle)
+
+# --- REANN model ---
+cutoff: 4.5                       # Angstrom
+nl: [128, 128]                    # Hidden layer sizes
+nblock: 2                         # Residual blocks
+nwave: 8                          # Radial Gaussians (power of 2)
+oc_loop: 1                        # Orbital coefficient iterations
+epoch: 20000                      # Max training epochs
+batchsize_train: 64
+activate: Relu_like
+
+# --- Training ---
+nproc: 1                          # Number of GPUs (torchrun --nproc_per_node)
+
+# --- Sampling ---
+sample_input: ./POSCAR            # Structure for MC sampling
+n_samples: 100                    # MC sampling steps
+perturb_amp: 0.2                  # Perturbation amplitude (Angstrom)
+mc_temperature: 1000              # MC temperature (K)
+fmax: 0.05                        # Force convergence for optimization (eV/A)
+
+# --- Active learning ---
+max_cycles: 8                     # Maximum AL iterations
+threshold_low: 7.0                # Convergence threshold (meV/atom)
+threshold_high: 50.0              # Upper filter threshold (meV/atom)
